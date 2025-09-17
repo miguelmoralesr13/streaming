@@ -1,0 +1,54 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: video-streaming-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: video_streaming
+    volumes:
+      - mongodb_data:/data/db
+      - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - video-streaming-network
+    command: mongod --auth
+
+  app:
+    build: .
+    container_name: video-streaming-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      MONGODB_HOST: mongodb
+      MONGODB_PORT: 27017
+      MONGODB_DATABASE: video_streaming_dev
+      MONGODB_USERNAME: admin
+      MONGODB_PASSWORD: password
+      JWT_SECRET: mySecretKey123456789012345678901234567890123456789012345678901234567890
+      ENCRYPTION_MASTER_KEY: MyMasterKey123456789012345678901234567890
+    depends_on:
+      - mongodb
+    networks:
+      - video-streaming-network
+    volumes:
+      - app_logs:/app/logs
+      - /tmp:/tmp
+    deploy:
+      resources:
+        limits:
+          memory: 4G
+        reservations:
+          memory: 2G
+
+volumes:
+  mongodb_data:
+  app_logs:
+
+networks:
+  video-streaming-network:
+    driver: bridge

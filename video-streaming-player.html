@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Streaming Player</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .token-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #007bff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,123,255,0.3);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        }
+
+        .video-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            border-left: 5px solid #28a745;
+        }
+
+        .video-container {
+            position: relative;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .video-info {
+            background: #2c3e50;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .video-title {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .video-status {
+            background: #28a745;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .progress-container {
+            background: #2c3e50;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #34495e;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #20c997);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            color: white;
+            font-weight: 600;
+            font-size: 0.9em;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 5px solid #dc3545;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 5px solid #28a745;
+        }
+
+        .status {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎬 Video Streaming Player</h1>
+        </div>
+
+        <div class="main-content">
+            <!-- Sección de Token -->
+            <div class="token-section">
+                <h3>🔑 Token de Acceso</h3>
+                <div class="form-group">
+                    <label for="token">Token JWT:</label>
+                    <input type="text" id="token" placeholder="Pega aquí tu token JWT">
+                </div>
+                <button class="btn" onclick="setToken()">Establecer Token</button>
+                <button class="btn btn-success" onclick="clearToken()">Limpiar Token</button>
+                <div id="tokenStatus"></div>
+            </div>
+
+            <!-- Sección de Video -->
+            <div class="video-section">
+                <h3>🎥 Reproductor de Video</h3>
+                <div class="form-group">
+                    <label for="videoId">ID del Video:</label>
+                    <input type="text" id="videoId" placeholder="Ingresa el ID del video" value="68c9e86128df2a17942b991d">
+                </div>
+                <button class="btn btn-success" onclick="loadVideo()">Cargar Video</button>
+                <button class="btn btn-warning" onclick="testChunkedStreaming()">Probar Chunks</button>
+                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
+                    💡 <strong>Límite de subida:</strong> Hasta 2GB por video<br>
+                    🎬 <strong>Streaming:</strong> Carga progresiva con Range Requests<br>
+                    🔧 <strong>Nuevo:</strong> Endpoints de streaming progresivo
+                </p>
+                
+                <div class="video-container">
+                    <video id="videoPlayer" controls width="100%" height="400">
+                        <source src="" type="video/mp4">
+                        Tu navegador no soporta el elemento video.
+                    </video>
+                    <div class="video-info">
+                        <div class="video-title" id="videoTitle">Selecciona un video</div>
+                        <div class="video-status" id="videoStatus">Sin video</div>
+                    </div>
+                    <div class="progress-container" id="progressContainer" style="display: none;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <div class="progress-text" id="progressText">0%</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado -->
+            <div class="status">
+                <div>Token: <span id="tokenState">No establecido</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración
+        const API_BASE_URL = 'http://localhost:8080/api/';
+        
+        // Configuración de CORS para Live Server (VS Code)
+        console.log('🌐 CORS configurado para Live Server: http://127.0.0.1:5500');
+        let authToken = null;
+
+        // Elementos del DOM
+        const videoPlayer = document.getElementById('videoPlayer');
+        const videoTitle = document.getElementById('videoTitle');
+        const videoStatus = document.getElementById('videoStatus');
+        const tokenStatus = document.getElementById('tokenStatus');
+        const tokenState = document.getElementById('tokenState');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill = document.getElementById('progressFill');
+        const progressText = document.getElementById('progressText');
+
+        // Función para mostrar mensajes
+        function showMessage(message, type = 'info') {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type === 'error' ? 'error' : 'success';
+            messageDiv.textContent = message;
+            
+            // Limpiar mensajes anteriores
+            const existingMessages = document.querySelectorAll('.error, .success');
+            existingMessages.forEach(msg => msg.remove());
+            
+            // Mostrar nuevo mensaje
+            tokenStatus.appendChild(messageDiv);
+            
+            // Auto-ocultar después de 5 segundos
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+
+        // Función para establecer token
+        function setToken() {
+            const token = document.getElementById('token').value.trim();
+            
+            if (!token) {
+                showMessage('Por favor ingresa un token', 'error');
+                return;
+            }
+
+            authToken = token;
+            localStorage.setItem('video_token', token);
+            tokenState.textContent = 'Establecido';
+            showMessage('Token establecido correctamente', 'success');
+        }
+
+        // Función para limpiar token
+        function clearToken() {
+            authToken = null;
+            localStorage.removeItem('video_token');
+            document.getElementById('token').value = '';
+            tokenState.textContent = 'No establecido';
+            videoPlayer.src = '';
+            videoTitle.textContent = 'Selecciona un video';
+            videoStatus.textContent = 'Sin video';
+            progressContainer.style.display = 'none';
+            progressFill.style.width = '0%';
+            progressText.textContent = '0%';
+            showMessage('Token limpiado', 'info');
+        }
+
+        // Función para cargar video con streaming progresivo
+        async function loadVideo() {
+            if (!authToken) {
+                showMessage('Debes establecer un token primero', 'error');
+                return;
+            }
+
+            const videoId = document.getElementById('videoId').value;
+            if (!videoId) {
+                showMessage('Por favor ingresa un ID de video', 'error');
+                return;
+            }
+
+            try {
+                showMessage('Iniciando streaming progresivo...', 'info');
+                
+                // Paso 1: Obtener información del video
+                const infoResponse = await fetch(`${API_BASE_URL}videos/${videoId}/info`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!infoResponse.ok) {
+                    const errorData = await infoResponse.json();
+                    throw new Error(errorData.message || 'Error al obtener información del video');
+                }
+
+                const videoInfo = await infoResponse.json();
+                
+                console.log('🎬 Video info:', {
+                    videoId: videoInfo.videoId,
+                    title: videoInfo.title,
+                    contentType: videoInfo.contentType,
+                    fileSize: `${Math.round(videoInfo.fileSize / 1024 / 1024)}MB`,
+                    supportsRangeRequests: videoInfo.supportsRangeRequests,
+                    chunkSize: `${Math.round(videoInfo.chunkSize / 1024)}KB`
+                });
+                
+                // Configurar el video player con el endpoint de streaming progresivo
+                // Incluir el token como parámetro de consulta para autenticación
+                const streamUrl = `${API_BASE_URL}videos/${videoId}/progressive-stream?token=${encodeURIComponent(authToken)}`;
+                videoPlayer.src = streamUrl;
+                videoPlayer.load();
+                
+                videoTitle.textContent = `${videoInfo.title} (${Math.round(videoInfo.fileSize / 1024 / 1024)}MB)`;
+                videoStatus.textContent = 'Conectando...';
+                
+                // Event listeners para el video player
+                videoPlayer.onloadstart = () => {
+                    videoStatus.textContent = 'Iniciando descarga...';
+                    progressContainer.style.display = 'flex';
+                    showMessage('Conectando al servidor de streaming progresivo...', 'info');
+                };
+                
+                videoPlayer.onprogress = () => {
+                    if (videoPlayer.buffered.length > 0) {
+                        const bufferedEnd = videoPlayer.buffered.end(videoPlayer.buffered.length - 1);
+                        const duration = videoPlayer.duration;
+                        if (duration > 0) {
+                            const percent = Math.round((bufferedEnd / duration) * 100);
+                            videoStatus.textContent = `Cargando... ${percent}%`;
+                            
+                            // Actualizar barra de progreso
+                            progressFill.style.width = `${percent}%`;
+                            progressText.textContent = `${percent}%`;
+                            
+                            // Debug info
+                            console.log(`📊 Progreso: ${percent}% (${Math.round(bufferedEnd)}s de ${Math.round(duration)}s)`);
+                        }
+                    }
+                };
+                
+                videoPlayer.oncanplay = () => {
+                    videoStatus.textContent = 'Listo para reproducir';
+                    showMessage('Streaming progresivo iniciado - Puedes reproducir ahora', 'success');
+                };
+                
+                videoPlayer.oncanplaythrough = () => {
+                    videoStatus.textContent = 'Completamente cargado';
+                    progressContainer.style.display = 'none';
+                    showMessage('Video completamente cargado', 'success');
+                };
+                
+                videoPlayer.onwaiting = () => {
+                    videoStatus.textContent = 'Buffering...';
+                };
+                
+                videoPlayer.onplaying = () => {
+                    videoStatus.textContent = 'Reproduciendo';
+                };
+                
+                videoPlayer.onpause = () => {
+                    videoStatus.textContent = 'Pausado';
+                };
+                
+                videoPlayer.onerror = (e) => {
+                    videoStatus.textContent = 'Error al cargar';
+                    console.error('Video error:', e);
+                    showMessage('Error al cargar el video. Verifica el ID y el token.', 'error');
+                };
+
+                // Mostrar información del video cuando esté disponible
+                videoPlayer.onloadedmetadata = () => {
+                    const duration = videoPlayer.duration;
+                    const minutes = Math.floor(duration / 60);
+                    const seconds = Math.floor(duration % 60);
+                    videoTitle.textContent = `${videoInfo.title} (${minutes}:${seconds.toString().padStart(2, '0')})`;
+                };
+
+            } catch (error) {
+                videoStatus.textContent = 'Error al cargar';
+                showMessage(`Error: ${error.message}`, 'error');
+            }
+        }
+
+        // Función para probar streaming por chunks
+        async function testChunkedStreaming() {
+            if (!authToken) {
+                showMessage('Debes establecer un token primero', 'error');
+                return;
+            }
+
+            const videoId = document.getElementById('videoId').value;
+            if (!videoId) {
+                showMessage('Por favor ingresa un ID de video', 'error');
+                return;
+            }
+
+            try {
+                showMessage('Probando streaming por chunks...', 'info');
+                
+                // Obtener información del video
+                const infoResponse = await fetch(`${API_BASE_URL}videos/${videoId}/info`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!infoResponse.ok) {
+                    throw new Error('Error al obtener información del video');
+                }
+
+                const videoInfo = await infoResponse.json();
+                const fileSize = videoInfo.fileSize;
+                const chunkSize = videoInfo.chunkSize;
+                
+                console.log('🧪 Iniciando prueba de chunks:', {
+                    fileSize: `${Math.round(fileSize / 1024 / 1024)}MB`,
+                    chunkSize: `${Math.round(chunkSize / 1024)}KB`,
+                    totalChunks: Math.ceil(fileSize / chunkSize)
+                });
+
+                // Probar descarga de chunks
+                const chunks = [];
+                const numChunks = Math.min(5, Math.ceil(fileSize / chunkSize)); // Probar solo los primeros 5 chunks
+                
+                for (let i = 0; i < numChunks; i++) {
+                    const start = i * chunkSize;
+                    const end = Math.min(start + chunkSize - 1, fileSize - 1);
+                    
+                    console.log(`📦 Descargando chunk ${i + 1}/${numChunks}: bytes ${start}-${end}`);
+                    
+                    const chunkResponse = await fetch(`${API_BASE_URL}videos/${videoId}/chunk?start=${start}&end=${end}`, {
+                        headers: {
+                            'Authorization': `Bearer ${authToken}`
+                        }
+                    });
+
+                    if (chunkResponse.ok) {
+                        const chunkData = await chunkResponse.arrayBuffer();
+                        chunks.push(chunkData);
+                        console.log(`✅ Chunk ${i + 1} descargado: ${chunkData.byteLength} bytes`);
+                    } else {
+                        console.error(`❌ Error descargando chunk ${i + 1}`);
+                    }
+                }
+
+                console.log(`🎉 Prueba completada: ${chunks.length} chunks descargados`);
+                showMessage(`Prueba de chunks exitosa: ${chunks.length} chunks descargados`, 'success');
+
+            } catch (error) {
+                console.error('Error en prueba de chunks:', error);
+                showMessage(`Error en prueba de chunks: ${error.message}`, 'error');
+            }
+        }
+
+        // Verificar token guardado al cargar la página
+        window.onload = function() {
+            const savedToken = localStorage.getItem('video_token');
+            if (savedToken) {
+                authToken = savedToken;
+                document.getElementById('token').value = savedToken;
+                tokenState.textContent = 'Establecido';
+                showMessage('Token restaurado desde localStorage', 'success');
+            }
+        };
+    </script>
+</body>
+</html>

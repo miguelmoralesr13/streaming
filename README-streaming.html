@@ -1,0 +1,174 @@
+# 🎬 Video Streaming Player - Guía de Uso
+
+## 📋 Descripción
+Este es un reproductor de video HTML5 completo que se conecta a tu microservicio de streaming. Incluye autenticación JWT, reproducción de videos, descarga, diagnóstico y gestión de lista de videos.
+
+## 🚀 Características
+
+### ✅ Funcionalidades Principales:
+- **🔐 Autenticación JWT**: Login/logout seguro
+- **🎥 Reproductor HTML5**: Streaming de videos con controles nativos
+- **📥 Descarga de Videos**: Descarga completa de archivos
+- **🔍 Diagnóstico**: Herramientas de debugging para GridFS
+- **📋 Lista de Videos**: Visualización y selección de videos disponibles
+- **📊 Estado en Tiempo Real**: Monitoreo del estado del sistema
+- **📱 Diseño Responsivo**: Funciona en desktop y móvil
+
+### ✅ Características Técnicas:
+- **Range Requests**: Soporte para reanudar reproducción
+- **Múltiples Formatos**: MP4, AVI, MOV, MKV
+- **Manejo de Errores**: Mensajes informativos y debugging
+- **UI Moderna**: Diseño atractivo con gradientes y animaciones
+
+## 🛠️ Configuración
+
+### 1. **Servidor Backend**
+Asegúrate de que tu microservicio esté ejecutándose:
+```bash
+# En el directorio del proyecto
+./gradlew bootRun
+# O con Docker
+docker-compose up
+```
+
+### 2. **Configuración del HTML**
+El archivo está configurado para conectarse a:
+- **URL Base**: `http://localhost:8080`
+- **Usuario por defecto**: `admin`
+- **Contraseña por defecto**: `admin123`
+- **Video ID por defecto**: `68c9e86128df2a17942b991d`
+
+### 3. **Personalización**
+Puedes modificar estas configuraciones en el JavaScript:
+```javascript
+const API_BASE_URL = 'http://localhost:8080'; // Cambiar URL si es necesario
+```
+
+## 📖 Cómo Usar
+
+### 1. **Abrir el Archivo**
+```bash
+# Abrir en navegador
+start video-streaming-player.html
+# O hacer doble clic en el archivo
+```
+
+### 2. **Autenticación**
+1. Ingresa usuario y contraseña (por defecto: admin/admin123)
+2. Haz clic en "Iniciar Sesión"
+3. Verifica que el estado cambie a "Autenticado"
+
+### 3. **Reproducir Video**
+1. Ingresa el ID del video en el campo correspondiente
+2. Haz clic en "Cargar Video"
+3. El video se cargará en el reproductor HTML5
+4. Usa los controles nativos para reproducir/pausar
+
+### 4. **Funciones Adicionales**
+- **Diagnosticar**: Ejecuta diagnóstico del archivo en GridFS
+- **Descargar**: Descarga el video completo a tu dispositivo
+- **Detener**: Limpia el reproductor
+- **Cargar Lista**: Muestra todos los videos disponibles
+
+## 🔧 Endpoints Utilizados
+
+### Autenticación:
+- `POST /api/auth/login` - Iniciar sesión
+
+### Streaming:
+- `GET /api/stream/{videoId}` - Reproducir video
+- `GET /api/stream/{videoId}/download` - Descargar video
+- `GET /api/stream/{videoId}/diagnose` - Diagnosticar archivo
+
+### Gestión:
+- `GET /api/videos` - Listar videos
+
+## 🎯 Casos de Uso
+
+### 1. **Desarrollo y Testing**
+- Probar el streaming de videos
+- Verificar autenticación
+- Diagnosticar problemas de GridFS
+- Probar diferentes formatos de video
+
+### 2. **Demostración**
+- Mostrar funcionalidades del microservicio
+- Presentar capacidades de streaming
+- Validar la integración frontend-backend
+
+### 3. **Debugging**
+- Usar el diagnóstico para identificar problemas
+- Verificar el estado del sistema
+- Monitorear la reproducción en tiempo real
+
+## 🚨 Solución de Problemas
+
+### Error de Conexión:
+- Verifica que el servidor esté ejecutándose
+- Confirma que la URL sea correcta
+- Revisa los logs del servidor
+
+### Error de Autenticación:
+- Verifica las credenciales
+- Confirma que el usuario exista en la base de datos
+- Revisa la configuración JWT
+
+### Error de Video:
+- Usa la función "Diagnosticar" para más información
+- Verifica que el video exista en GridFS
+- Confirma que el ID del video sea correcto
+
+### Error de CORS:
+- Asegúrate de que CORS esté configurado en el backend
+- Verifica que el servidor permita requests desde el navegador
+
+## 📱 Compatibilidad
+
+### Navegadores Soportados:
+- ✅ Chrome 60+
+- ✅ Firefox 55+
+- ✅ Safari 11+
+- ✅ Edge 79+
+
+### Dispositivos:
+- ✅ Desktop (Windows, Mac, Linux)
+- ✅ Tablet (iPad, Android)
+- ✅ Móvil (iPhone, Android)
+
+## 🔒 Seguridad
+
+- **JWT Tokens**: Autenticación segura
+- **HTTPS**: Recomendado para producción
+- **CORS**: Configurado para desarrollo
+- **Validación**: Inputs validados en frontend y backend
+
+## 🎨 Personalización
+
+### Cambiar Colores:
+Modifica las variables CSS en la sección `<style>`:
+```css
+:root {
+    --primary-color: #007bff;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+}
+```
+
+### Agregar Funciones:
+Extiende el JavaScript con nuevas funciones:
+```javascript
+function nuevaFuncion() {
+    // Tu código aquí
+}
+```
+
+## 📞 Soporte
+
+Si tienes problemas:
+1. Revisa los logs del servidor
+2. Usa la función de diagnóstico
+3. Verifica la consola del navegador
+4. Confirma la configuración de red
+
+¡Disfruta del streaming! 🎬✨
